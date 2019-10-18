@@ -1,0 +1,2 @@
+# Don't copy our decrypted secrets file to the Docker daemon.
+secrets

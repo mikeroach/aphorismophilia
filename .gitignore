@@ -1,0 +1,8 @@
+.DS_Store
+ut-results*.xml
+
+#  Local .terraform directories
+**/.terraform/*
+# .tfstate files
+*.tfstate
+*.tfstate.*
