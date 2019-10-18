@@ -63,7 +63,7 @@ I develop and deploy the aphorismophilia service along with all its supporting i
 | **[iac-bootstrap-salt](https://github.com/mikeroach/iac-bootstrap-salt)** | SaltStack masterless states and pillar for management host configuration. |
 | **[iac-template-pipeline](https://github.com/mikeroach/iac-template-pipeline)** | Terraform module pipeline for templated infrastructure and application stacks\*. |
 | **[iac-pipeline-auto](https://github.com/mikeroach/iac-pipeline-auto)** | Pipeline for environments receiving automatic continuous delivery deployments. |
-| **[iac-pipeline-gated](https://github.com/mikeroach/iac-pipeline)** | Pipeline for environments requiring manual approval to perform deployments. |
+| **[iac-pipeline-gated](https://github.com/mikeroach/iac-pipeline-gated)** | Pipeline for environments requiring manual approval to perform deployments. |
 | **[aphorismophilia](https://github.com/mikeroach/aphorismophilia)** | Go "hello world" containerized webapp source and Jenkins-based CI pipeline. |
 | **[aphorismophilia-terraform](https://github.com/mikeroach/aphorismophilia-terraform)** | Terraform module to manage a Kubernetes deployment of the aphorismophilia webapp\*. |
 
