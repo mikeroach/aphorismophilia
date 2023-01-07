@@ -60,13 +60,13 @@ pipeline {
             }
         }
         /* Launch a prod-like integration testing namespace into the auto environment for pull request
-           and master branch builds. This could launch a fully prod-consistent composed infrastructure
+           and main branch builds. This could launch a fully prod-consistent composed infrastructure
            stack, but I don't want to spend that time and money on personal project pipeline builds
            (at least while this application's dependencies still fit inside a Kubernetes namespace)
            especially since I already launch new stacks via the infrastructure template pipeline. */
         stage('Integration Test') {
             when {
-                anyOf { changeRequest() ; branch 'master'}
+                anyOf { changeRequest() ; branch 'main'}
             }
             environment { // These variables are passed via make to retrieve K8s provider credentials and invoke Terraform.
                 CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE = "../secrets/ephemeral-testing-service-account.json"
@@ -96,7 +96,7 @@ pipeline {
         }
         stage('Publish to Container Registry') {
             when {
-                branch 'master' // Only push to container registry when updating master
+                branch 'main' // Only push to container registry when updating main
             }
             steps {
                 withDockerRegistry([url: "", credentialsId: "DockerHub_mikeroach"]) {
@@ -107,7 +107,7 @@ pipeline {
         }
         stage('Update Auto Environments') {
           when {
-              branch 'master' // Only deploy to upstream environment when updating master
+              branch 'main' // Only deploy to upstream environment when updating main
           }
           steps { // I'll keep my local minikube test commands here for posterity.
               // Note the escaped \ in sed regexp match group; \ is a Groovy DSL special character 
@@ -139,7 +139,7 @@ pipeline {
                      description: 'All tests passed',
                      targetUrl: "${env.BUILD_URL}/display/redirect")
 
-                    // Attempt to auto-merge this PR into master unless the 'no-merge' label exists to indicate otherwise.
+                    // Attempt to auto-merge this PR into main unless the 'no-merge' label exists to indicate otherwise.
                     if (! pullRequest.labels.contains("no-merge")) {
                         echo "No-merge label absent; attempting auto-merge."
 
