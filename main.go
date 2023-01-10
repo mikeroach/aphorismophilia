@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-const version string = "0.1.1"
+const version string = "0.2.0"
 
 // Build string is overridden at compile time by linker flags in Dockerfile (locally or via Jenkins).
 var build = "local" //nolint since we want part of our version identifier to be a global variable.
