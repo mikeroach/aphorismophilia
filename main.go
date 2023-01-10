@@ -58,7 +58,9 @@ func handler(response http.ResponseWriter, request *http.Request) {
 	/*
 	   TODO: Document and automatically expose backend-specific mode options. Meanwhile:
 	   Flatfile: 'all' = returns entire quotes file, 'random' (default) = returns single random quote
-	   Fortune: 'obscene' = returns potentially offensive fortunes, '<null>' (default) = returns SFW fortunes
+	   Fortune: 'obscene' = returns potentially offensive fortunes,
+				'all' = returns both offensive and SFW fortunes,
+				'<null>' (default) = returns SFW fortunes only
 	   Dummy: No options. This backend isn't included in the HTML template for end-user display.
 	*/
 
