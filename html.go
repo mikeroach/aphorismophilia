@@ -11,8 +11,9 @@ ShowDebug       bool      Whether to expand debug output by default
 
 */
 
+// I don't mind long lines in my HTML templates.
+//
 //nolint:lll
-// ... since I don't mind long lines in my HTML templates.
 const html = `
 <!doctype html>
 <html>
@@ -98,9 +99,9 @@ html, body, p {
     <li>Love of aphorisms.</li>
     <li>Flimsy pretense to gain hands-on experience with modern technology trends.</li>
   </ol>
-  <p>Learn more on <a href="https://github.com/mikeroach/aphorismophilia">Github</a>.</p>
+  <p>Learn more and discover easter eggs on <a href="https://github.com/mikeroach/aphorismophilia">GitHub</a>.</p>
   
-<button class="collapsible">🧘‍♂️ Guru Meditiation:</button>
+<button class="collapsible">🧘 Guru Meditiation:</button>
 <div class="debug">
 <pre>
 {{.DebugOutput}}
