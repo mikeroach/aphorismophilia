@@ -46,16 +46,16 @@ pipeline {
                 sh label: 'Build release container', script: 'docker build --target release --build-arg BUILD=${BUILD} -t ${JOB_ROOT}:${BUILD} .'
             }
         }
-        stage('Blackbox HTTP Test') {
+        stage('Opaque HTTP Test') {
             steps {
-                sh label: 'Launch release container for blackbox testing', script: 'docker run -d --rm --name ${JOB_ROOT}-${BUILD}-blackbox ${JOB_ROOT}:${BUILD}'
-                sh label: 'Run HTTP check against base service', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-blackbox` -p 8888 -v -u "/"'
-                sh label: 'Run HTTP check against fortune backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-blackbox` -p 8888 -v -u "/?backend=fortune"'
-                sh label: 'Run HTTP check against flatfile backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-blackbox` -p 8888 -v -u "/?backend=flatfile"'
+                sh label: 'Launch release container for opaque testing', script: 'docker run -d --rm --name ${JOB_ROOT}-${BUILD}-opaque ${JOB_ROOT}:${BUILD}'
+                sh label: 'Run HTTP check against base service', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-opaque` -p 8888 -v -u "/"'
+                sh label: 'Run HTTP check against fortune backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-opaque` -p 8888 -v -u "/?backend=fortune"'
+                sh label: 'Run HTTP check against flatfile backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-opaque` -p 8888 -v -u "/?backend=flatfile"'
             }
             post {
                 always {
-                    sh label: 'Kill release container after blackbox testing', script: 'docker kill ${JOB_ROOT}-${BUILD}-blackbox'
+                    sh label: 'Kill release container after opaque testing', script: 'docker kill ${JOB_ROOT}-${BUILD}-opaque'
                 }
             }
         }
