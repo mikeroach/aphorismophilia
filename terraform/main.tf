@@ -18,7 +18,7 @@ resource "kubernetes_namespace" "aphorismophilia-ephemeral-namespace" {
 }
 
 module "aphorismophilia-ephemeral" {
-  source                            = "github.com/mikeroach/aphorismophilia-terraform?ref=v12"
+  source                            = "github.com/mikeroach/aphorismophilia-terraform?ref=v2"
   dns_domain                        = var.dns_domain
   dns_hostname                      = var.dns_hostname
   dockerhub_credentials             = var.dockerhub_credentials
