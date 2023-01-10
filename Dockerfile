@@ -3,8 +3,12 @@
 # Jenkins pipeline due to https://issues.jenkins-ci.org/browse/JENKINS-44609 . See companion
 # Jenkinsfile in this repository for more information.
 
+# Per https://github.com/docker-library/docs/blob/f082a22d9ff958fd91d24b94c0e5d4a0af69cf1d/golang/variant-alpine.md -
+# consider migrating to a supported golang builder image variant. Look into preserving
+# small release artifact sizes with a distroless image (account for fortune-mod).
+
 # Stage 0 (Alpine base image + Golang tools for build & test dependencies)
-FROM golang:1.12-alpine3.10 as base
+FROM golang:1.19-alpine3.17 as base
 # FIXME: This fortune package only returns offensive fortunes, breaking "mode" option compatibility for the fortune module.
 WORKDIR /tmp
 COPY vendor ./vendor
@@ -34,7 +38,7 @@ RUN cp -a /go/src/aphorismophilia/backends/flatfile/wisdom.txt /go/bin/
 # the same environment we just tested - to keep things honest we should probably start with
 # the same Alpine base image and manage our own build/test containers (e.g. duplicate Golang's
 # Dockerfile) to ensure maximum environmental consistency.
-FROM alpine:3.10 as release
+FROM alpine:3.17 as release
 # FIXME: This package only returns offensive fortunes, breaking "mode" option compatibility for the fortune module.
 WORKDIR /tmp
 COPY vendor/*.apk ./
