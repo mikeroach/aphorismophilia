@@ -1,0 +1,42 @@
+# This is a naive Alpine package recipe to build Shlomi Fish's port of
+# fortune-mod, which correclty supports -o and -a options unlike the
+# community Alpine fortune package. It uses auto-generated/untrusted
+# self-signing keys since we're only including it in this project.
+
+# Quick build instructions as of Alpine 3.17:
+# apk add alpine-sdk
+# abuild-keygen -n -a
+# abuild -Fr
+
+pkgname=fortune-mod
+pkgver=3.14.1
+pkgrel=1
+pkgdesc="Linux port of the UNIX fortune command"
+url="https://github.com/shlomif/fortune-mod"
+arch="x86_64"
+license="BSD"
+options="!check"
+depends=""
+makedepends="build-base cmake perl"
+checkdepends=""
+source="
+	https://github.com/shlomif/fortune-mod/releases/download/fortune-mod-$pkgver/fortune-mod-$pkgver.tar.xz
+	10-set_paths.patch
+	20-fix_directories.patch
+"
+subpackages="$pkgname-doc"
+builddir="$srcdir/fortune-mod-$pkgver"
+
+build() {
+	mkdir build ; cd build ; cmake -DCMAKE_INSTALL_PREFIX="/usr" .. ; make
+}
+
+package() {
+	cd "$builddir"/build ; make DESTDIR="$pkgdir" install
+}
+
+sha512sums="
+0de0ec033ffc35a7a9ec1a549e6dac425757ec5fcc718c772f0a4e548d23c46451af4a90b0ac548f2ab60d68856ca0fa5e8f10930efe6b199e96b2cc1c568810  fortune-mod-3.14.1.tar.xz
+5fd049f4a2bdd505940c8e8b4093f7566aedafba6c6286060bc48f90e42a3205bedbb5a817890a2f0ca91cfa2da140eb2acfa43ed9148a9710ab57f043f5d11e  10-set_paths.patch
+ab8e7ad21e7f1a61f93b047bab054e749314968d45aee8ae83351fb5c7496b52919df319708ad7899a8c65929703437ef6287615e6bc380973e529a951e1a50a  20-fix_directories.patch
+"

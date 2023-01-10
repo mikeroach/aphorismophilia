@@ -9,10 +9,9 @@
 
 # Stage 0 (Alpine base image + Golang tools for build & test dependencies)
 FROM golang:1.19-alpine3.17 as base
-# FIXME: This fortune package only returns offensive fortunes, breaking "mode" option compatibility for the fortune module.
 WORKDIR /tmp
 COPY vendor ./vendor
-RUN apk add --repositories-file=/dev/null --allow-untrusted --no-network --no-cache vendor/fortune-0.1-r1.apk vendor/libbsd-0.9.1-r0.apk
+RUN apk add --repositories-file=/dev/null --allow-untrusted --no-network --no-cache vendor/fortune-mod/fortune-mod-3.14.1-r1.apk
 RUN tar xf vendor/gotestsum_0.3.5_linux_amd64.tar.gz && cp gotestsum /usr/bin/
 
 # Stage 1 (test)
@@ -39,10 +38,9 @@ RUN cp -a /go/src/aphorismophilia/backends/flatfile/wisdom.txt /go/bin/
 # the same Alpine base image and manage our own build/test containers (e.g. duplicate Golang's
 # Dockerfile) to ensure maximum environmental consistency.
 FROM alpine:3.17 as release
-# FIXME: This package only returns offensive fortunes, breaking "mode" option compatibility for the fortune module.
 WORKDIR /tmp
-COPY vendor/*.apk ./
-RUN apk add --repositories-file=/dev/null --allow-untrusted --no-network --no-cache ./fortune-0.1-r1.apk ./libbsd-0.9.1-r0.apk ; rm ./fortune-0.1-r1.apk ./libbsd-0.9.1-r0.apk
+COPY vendor/fortune-mod/fortune-mod-3.14.1-r1.apk ./
+RUN apk add --repositories-file=/dev/null --allow-untrusted --no-network --no-cache fortune-mod-3.14.1-r1.apk && rm fortune-mod-3.14.1-r1.apk
 WORKDIR /go/bin
 COPY --from=build /go/bin/* ./
 
