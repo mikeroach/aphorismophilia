@@ -46,27 +46,27 @@ pipeline {
                 sh label: 'Build release container', script: 'docker build --target release --build-arg BUILD=${BUILD} -t ${JOB_ROOT}:${BUILD} .'
             }
         }
-        stage('Blackbox HTTP Test') {
+        stage('Opaque HTTP Test') {
             steps {
-                sh label: 'Launch release container for blackbox testing', script: 'docker run -d --rm --name ${JOB_ROOT}-${BUILD}-blackbox ${JOB_ROOT}:${BUILD}'
-                sh label: 'Run HTTP check against base service', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-blackbox` -p 8888 -v -u "/"'
-                sh label: 'Run HTTP check against fortune backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-blackbox` -p 8888 -v -u "/?backend=fortune"'
-                sh label: 'Run HTTP check against flatfile backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-blackbox` -p 8888 -v -u "/?backend=flatfile"'
+                sh label: 'Launch release container for opaque testing', script: 'docker run -d --rm --name ${JOB_ROOT}-${BUILD}-opaque ${JOB_ROOT}:${BUILD}'
+                sh label: 'Run HTTP check against base service', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-opaque` -p 8888 -v -u "/"'
+                sh label: 'Run HTTP check against fortune backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-opaque` -p 8888 -v -u "/?backend=fortune"'
+                sh label: 'Run HTTP check against flatfile backend', script: '/usr/lib/nagios/plugins/check_http -H `docker inspect --format "{{ .NetworkSettings.IPAddress }}" ${JOB_ROOT}-${BUILD}-opaque` -p 8888 -v -u "/?backend=flatfile"'
             }
             post {
                 always {
-                    sh label: 'Kill release container after blackbox testing', script: 'docker kill ${JOB_ROOT}-${BUILD}-blackbox'
+                    sh label: 'Kill release container after opaque testing', script: 'docker kill ${JOB_ROOT}-${BUILD}-opaque'
                 }
             }
         }
         /* Launch a prod-like integration testing namespace into the auto environment for pull request
-           and master branch builds. This could launch a fully prod-consistent composed infrastructure
+           and main branch builds. This could launch a fully prod-consistent composed infrastructure
            stack, but I don't want to spend that time and money on personal project pipeline builds
            (at least while this application's dependencies still fit inside a Kubernetes namespace)
            especially since I already launch new stacks via the infrastructure template pipeline. */
         stage('Integration Test') {
             when {
-                anyOf { changeRequest() ; branch 'master'}
+                anyOf { changeRequest() ; branch 'main'}
             }
             environment { // These variables are passed via make to retrieve K8s provider credentials and invoke Terraform.
                 CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE = "../secrets/ephemeral-testing-service-account.json"
@@ -96,7 +96,7 @@ pipeline {
         }
         stage('Publish to Container Registry') {
             when {
-                branch 'master' // Only push to container registry when updating master
+                branch 'main' // Only push to container registry when updating main
             }
             steps {
                 withDockerRegistry([url: "", credentialsId: "DockerHub_mikeroach"]) {
@@ -107,7 +107,7 @@ pipeline {
         }
         stage('Update Auto Environments') {
           when {
-              branch 'master' // Only deploy to upstream environment when updating master
+              branch 'main' // Only deploy to upstream environment when updating main
           }
           steps { // I'll keep my local minikube test commands here for posterity.
               // Note the escaped \ in sed regexp match group; \ is a Groovy DSL special character 
@@ -139,7 +139,7 @@ pipeline {
                      description: 'All tests passed',
                      targetUrl: "${env.BUILD_URL}/display/redirect")
 
-                    // Attempt to auto-merge this PR into master unless the 'no-merge' label exists to indicate otherwise.
+                    // Attempt to auto-merge this PR into main unless the 'no-merge' label exists to indicate otherwise.
                     if (! pullRequest.labels.contains("no-merge")) {
                         echo "No-merge label absent; attempting auto-merge."
 
